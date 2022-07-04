@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import me.lokka30.treasury.api.economy.EconomyProvider;
 import me.lokka30.treasury.api.economy.account.PlayerAccount;
 import me.lokka30.treasury.api.economy.currency.Currency;
-import me.lokka30.treasury.api.economy.response.EconomySubscriber;
 import me.lokka30.treasury.plugin.bukkit.TreasuryBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -60,13 +59,11 @@ public class BalanceCache extends BukkitRunnable {
         }
         balances.clear();
         for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-            PlayerAccount account = EconomySubscriber
-                    .<Boolean>asFuture(s -> provider.hasPlayerAccount(player.getUniqueId(), s))
+            PlayerAccount account = provider
+                    .hasPlayerAccount(player.getUniqueId())
                     .thenCompose(val -> {
                         if (val) {
-                            return EconomySubscriber.<PlayerAccount>asFuture(s -> provider.retrievePlayerAccount(player.getUniqueId(),
-                                    s
-                            ));
+                            return provider.retrievePlayerAccount(player.getUniqueId());
                         } else {
                             return CompletableFuture.completedFuture(null);
                         }
@@ -76,13 +73,12 @@ public class BalanceCache extends BukkitRunnable {
                 continue;
             }
             for (Currency currency : provider.getCurrencies()) {
-                BigDecimal balance = EconomySubscriber
-                        .<BigDecimal>asFuture(s -> account.retrieveBalance(currency, s))
-                        .join();
+                BigDecimal balance = account.retrieveBalance(currency).join();
                 if (balance == null || balance.equals(BigDecimal.ZERO)) {
                     continue;
                 }
-                balances.put(player.getUniqueId(),
+                balances.put(
+                        player.getUniqueId(),
                         new AbstractMap.SimpleEntry<>(currency.getIdentifier(), balance)
                 );
             }

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import me.lokka30.treasury.api.common.misc.TriState;
 import me.lokka30.treasury.api.economy.EconomyProvider;
 import me.lokka30.treasury.api.economy.currency.Currency;
@@ -64,6 +65,14 @@ public interface Account {
     void setName(@Nullable String name, @NotNull EconomySubscriber<Boolean> subscription);
 
     /**
+     * {@link #setName(String, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Boolean> setName(@Nullable String name) {
+        return EconomySubscriber.asFuture(s -> setName(name, s));
+    }
+
+    /**
      * Request the balance of the {@code Account}.
      *
      * @param currency     the {@link Currency} of the balance being requested
@@ -74,6 +83,14 @@ public interface Account {
     void retrieveBalance(
             @NotNull Currency currency, @NotNull EconomySubscriber<BigDecimal> subscription
     );
+
+    /**
+     * {@link #retrieveBalance(Currency, EconomySubscriber)}}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> retrieveBalance(@NotNull Currency currency) {
+        return EconomySubscriber.asFuture(s -> retrieveBalance(currency, s));
+    }
 
     /**
      * Set the balance of the {@code Account}.
@@ -91,6 +108,18 @@ public interface Account {
             @NotNull Currency currency,
             @NotNull EconomySubscriber<BigDecimal> subscription
     );
+
+    /**
+     * {@link #setBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> setBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency
+    ) {
+        return EconomySubscriber.asFuture(s -> setBalance(amount, initiator, currency, s));
+    }
 
     /**
      * Withdraw an amount from the {@code Account} balance.
@@ -120,6 +149,18 @@ public interface Account {
     }
 
     /**
+     * {@link #withdrawBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> withdrawBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency
+    ) {
+        return EconomySubscriber.asFuture(s -> withdrawBalance(amount, initiator, currency, s));
+    }
+
+    /**
      * Withdraw an amount from the {@code Account} balance.
      *
      * @param amount       the amount the balance will be reduced by
@@ -139,6 +180,25 @@ public interface Account {
             @NotNull EconomySubscriber<BigDecimal> subscription
     ) {
         withdrawBalance(amount, initiator, currency, importance, null, subscription);
+    }
+
+    /**
+     * {@link #withdrawBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomyTransactionImportance, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> withdrawBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency,
+            @NotNull EconomyTransactionImportance importance
+    ) {
+        return EconomySubscriber.asFuture(s -> withdrawBalance(
+                amount,
+                initiator,
+                currency,
+                importance,
+                s
+        ));
     }
 
     /**
@@ -174,6 +234,27 @@ public interface Account {
     }
 
     /**
+     * {@link #withdrawBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomyTransactionImportance, String, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> withdrawBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency,
+            @NotNull EconomyTransactionImportance importance,
+            @Nullable String reason
+    ) {
+        return EconomySubscriber.asFuture(s -> withdrawBalance(
+                amount,
+                initiator,
+                currency,
+                importance,
+                reason,
+                s
+        ));
+    }
+
+    /**
      * Deposit an amount into the {@code Account} balance.
      *
      * @param amount       the amount the balance will be increased by
@@ -201,6 +282,18 @@ public interface Account {
     }
 
     /**
+     * {@link #depositBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> depositBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency
+    ) {
+        return EconomySubscriber.asFuture(s -> depositBalance(amount, initiator, currency, s));
+    }
+
+    /**
      * Deposit an amount into the {@code Account} balance.
      *
      * @param amount       the amount the balance will be increased by
@@ -220,6 +313,25 @@ public interface Account {
             @NotNull EconomySubscriber<BigDecimal> subscription
     ) {
         depositBalance(amount, initiator, currency, importance, null, subscription);
+    }
+
+    /**
+     * {@link #depositBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomyTransactionImportance, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> depositBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency,
+            @NotNull EconomyTransactionImportance importance
+    ) {
+        return EconomySubscriber.asFuture(s -> depositBalance(
+                amount,
+                initiator,
+                currency,
+                importance,
+                s
+        ));
     }
 
     /**
@@ -255,6 +367,27 @@ public interface Account {
     }
 
     /**
+     * {@link #depositBalance(BigDecimal, EconomyTransactionInitiator, Currency, EconomyTransactionImportance, String, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> depositBalance(
+            @NotNull BigDecimal amount,
+            @NotNull EconomyTransactionInitiator<?> initiator,
+            @NotNull Currency currency,
+            @NotNull EconomyTransactionImportance importance,
+            @Nullable String reason
+    ) {
+        return EconomySubscriber.asFuture(s -> depositBalance(
+                amount,
+                initiator,
+                currency,
+                importance,
+                reason,
+                s
+        ));
+    }
+
+    /**
      * Does a {@link EconomyTransaction} on this account.
      *
      * @param economyTransaction the transaction that should be done
@@ -266,6 +399,14 @@ public interface Account {
             @NotNull EconomyTransaction economyTransaction,
             @NotNull EconomySubscriber<BigDecimal> subscription
     );
+
+    /**
+     * {@link #doTransaction(EconomyTransaction, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> doTransaction(@NotNull EconomyTransaction economyTransaction) {
+        return EconomySubscriber.asFuture(s -> doTransaction(economyTransaction, s));
+    }
 
     /**
      * Reset the {@code Account} balance to its starting amount.
@@ -298,6 +439,16 @@ public interface Account {
     }
 
     /**
+     * {@link #resetBalance(EconomyTransactionInitiator, Currency, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> resetBalance(
+            @NotNull EconomyTransactionInitiator<?> initiator, @NotNull Currency currency
+    ) {
+        return EconomySubscriber.asFuture(s -> resetBalance(initiator, currency, s));
+    }
+
+    /**
      * Check if the {@code Account} can afford a withdrawal of a certain amount.
      *
      * @param amount       the amount the balance must meet or exceed
@@ -325,6 +476,15 @@ public interface Account {
     }
 
     /**
+     * {@link #canAfford(BigDecimal, Currency, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Boolean> canAfford(@NotNull BigDecimal amount,
+                                                 @NotNull Currency currency) {
+        return EconomySubscriber.asFuture(s -> canAfford(amount, currency, s));
+    }
+
+    /**
      * Delete data stored for the {@code Account}.
      *
      * <p>Providers should consider storing backups of deleted accounts.
@@ -335,12 +495,28 @@ public interface Account {
     void deleteAccount(@NotNull EconomySubscriber<Boolean> subscription);
 
     /**
+     * {@link #deleteAccount(EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Boolean> deleteAccount() {
+        return EconomySubscriber.asFuture(this::deleteAccount);
+    }
+
+    /**
      * Returns the {@link Currency#getIdentifier()  Currencies} this {@code Account} holds balance for.
      *
      * @param subscription the {@link EconomySubscriber} accepting the currencies
      * @since v1.0.0
      */
     void retrieveHeldCurrencies(@NotNull EconomySubscriber<Collection<String>> subscription);
+
+    /**
+     * {@link #retrieveHeldCurrencies(EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Collection<String>> retrieveHeldCurrencies() {
+        return EconomySubscriber.asFuture(this::retrieveHeldCurrencies);
+    }
 
     /**
      * Request the {@link EconomyTransaction} history, limited by the {@code transactionCount} and the {@link Temporal}
@@ -365,6 +541,21 @@ public interface Account {
     );
 
     /**
+     * {@link #retrieveTransactionHistory(int, Temporal, Temporal, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Collection<EconomyTransaction>> retrieveTransactionHistory(
+            int transactionCount, @NotNull Temporal from, @NotNull Temporal to
+    ) {
+        return EconomySubscriber.asFuture(s -> retrieveTransactionHistory(
+                transactionCount,
+                from,
+                to,
+                s
+        ));
+    }
+
+    /**
      * Request the {@link EconomyTransaction} history, limited by the {@code transactionCount}, of this {@code Account}.
      *
      * <p>If the specified {@code transactionCount} is higher than the known transactions, then this will return all the
@@ -382,12 +573,28 @@ public interface Account {
     }
 
     /**
+     * {@link #retrieveTransactionHistory(int, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Collection<EconomyTransaction>> retrieveTransactionHistory(int transactionCount) {
+        return EconomySubscriber.asFuture(s -> retrieveTransactionHistory(transactionCount, s));
+    }
+
+    /**
      * Request a listing of all member players of the account.
      *
      * @param subscription the {@link EconomySubscriber} accepting the members
      * @since v1.0.0
      */
     void retrieveMemberIds(@NotNull EconomySubscriber<Collection<UUID>> subscription);
+
+    /**
+     * {@link #retrieveMemberIds(EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Collection<UUID>> retrieveMemberIds() {
+        return EconomySubscriber.asFuture(this::retrieveMemberIds);
+    }
 
     /**
      * Check if the specified user is a member of the account.
@@ -399,6 +606,14 @@ public interface Account {
      * @since v1.0.0
      */
     void isMember(@NotNull UUID player, @NotNull EconomySubscriber<Boolean> subscription);
+
+    /**
+     * {@link #isMember(UUID, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Boolean> isMember(@NotNull UUID player) {
+        return EconomySubscriber.asFuture(s -> isMember(player, s));
+    }
 
     /**
      * Modifies the state of the specified {@link AccountPermission} {@code permissions} for the
@@ -422,6 +637,23 @@ public interface Account {
     );
 
     /**
+     * {@link #setPermission(UUID, TriState, EconomySubscriber, AccountPermission...)}
+     */
+    @NotNull
+    default CompletableFuture<TriState> setPermission(
+            @NotNull UUID player,
+            @NotNull TriState permissionValue,
+            @NotNull AccountPermission @NotNull ... permissions
+    ) {
+        return EconomySubscriber.asFuture(s -> setPermission(
+                player,
+                permissionValue,
+                s,
+                permissions
+        ));
+    }
+
+    /**
      * Request the {@link AccountPermission AccountPermissions} for the specified {@link UUID}
      * {@code player}.
      *
@@ -433,6 +665,14 @@ public interface Account {
             @NotNull UUID player,
             @NotNull EconomySubscriber<Map<AccountPermission, TriState>> subscription
     );
+
+    /**
+     * {@link #retrievePermissions(UUID, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<Map<AccountPermission, TriState>> retrievePermissions(@NotNull UUID player) {
+        return EconomySubscriber.asFuture(s -> retrievePermissions(player, s));
+    }
 
     /**
      * Checks whether given player has the given permission on this account.
@@ -450,5 +690,15 @@ public interface Account {
             @NotNull EconomySubscriber<TriState> subscription,
             @NotNull AccountPermission @NotNull ... permissions
     );
+
+    /**
+     * {@link #hasPermission(UUID, EconomySubscriber, AccountPermission...)}
+     */
+    @NotNull
+    default CompletableFuture<TriState> hasPermission(
+            @NotNull UUID player, @NotNull AccountPermission @NotNull ... permissions
+    ) {
+        return EconomySubscriber.asFuture(s -> hasPermission(player, s, permissions));
+    }
 
 }

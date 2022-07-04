@@ -7,6 +7,7 @@ package me.lokka30.treasury.api.economy.currency;
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import me.lokka30.treasury.api.economy.response.EconomySubscriber;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -104,6 +105,17 @@ public interface Currency {
     );
 
     /**
+     * {@link #to(Currency, BigDecimal, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> to(
+            @NotNull Currency currency,
+            @NotNull BigDecimal amount
+    ) {
+        return EconomySubscriber.asFuture(s -> to(currency, amount, s));
+    }
+
+    /**
      * Used to get the BigDecimal representation of an amount represented by a formatted string.
      * If the {@code formatted} value can't be parsed, then
      * {@link me.lokka30.treasury.api.economy.response.EconomyFailureReason#NUMBER_PARSING_ERROR}
@@ -117,6 +129,14 @@ public interface Currency {
      * @since v1.0.0
      */
     void parse(@NotNull String formatted, @NotNull EconomySubscriber<BigDecimal> subscription);
+
+    /**
+     * {@link #parse(String, EconomySubscriber)}
+     */
+    @NotNull
+    default CompletableFuture<BigDecimal> parse(@NotNull String formatted) {
+        return EconomySubscriber.asFuture(s -> parse(formatted, s));
+    }
 
     /**
      * Gets the starting balance of a specific player account for this currency.
